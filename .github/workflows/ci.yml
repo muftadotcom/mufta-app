@@ -10,9 +10,10 @@ on:
     branches: [ main ]
 
 jobs:
-  # This job checks for code quality and formatting issues
-  lint:
-    name: Lint Code
+  # This job builds the application to ensure it's free of compilation errors.
+  # The `next build` command also runs linting and type-checking.
+  build:
+    name: Build Application
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,13 +27,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run ESLint
-        run: pnpm lint
+      - name: Build Next.js App
+        # This command will fail if there are any type errors or linting errors,
+        # making it a comprehensive check for code quality.
+        run: pnpm build
 
   # This job runs the unit tests to ensure business logic is correct
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    needs: build # This job will only run if the 'build' job succeeds
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,6 +58,7 @@ jobs:
   e2e:
     name: Run End-to-End Tests
     runs-on: ubuntu-latest
+    needs: build # This job will only run if the 'build' job succeeds
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,7 +84,7 @@ jobs:
   # build-docker:
   #   name: Build Docker Image
   #   runs-on: ubuntu-latest
-  #   needs: [lint, test, e2e] # Only run if all previous jobs succeed
+  #   needs: [build, test, e2e] # Only run if all previous jobs succeed
   #   steps:
   #     - name: Checkout code
   #       uses: actions/checkout@v4
