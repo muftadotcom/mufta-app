@@ -1,0 +1,87 @@
+# .github/workflows/ci.yml
+
+name: Mufta App CI/CD Pipeline
+
+# This workflow runs on every push and pull request to the 'main' branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # This job checks for code quality and formatting issues
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run ESLint
+        run: pnpm lint
+
+  # This job runs the unit tests to ensure business logic is correct
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Run Vitest unit tests
+        # In a real project, you would have a "test" script in package.json
+        # For now, this is a placeholder.
+        run: echo "Tests would run here..." # Replace with `pnpm test`
+
+  # This job runs end-to-end tests using Playwright
+  e2e:
+    name: Run End-to-End Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright Browsers
+        # This command downloads the browsers needed for e2e testing
+        run: pnpm exec playwright install --with-deps
+      
+      - name: Run Playwright tests
+        # This command would run your end-to-end tests
+        run: echo "E2E tests would run here..." # Replace with `pnpm playwright test`
+
+  # This job would build a Docker image (as per your plan)
+  # It is commented out as it requires Dockerfile setup
+  # build-docker:
+  #   name: Build Docker Image
+  #   runs-on: ubuntu-latest
+  #   needs: [lint, test, e2e] # Only run if all previous jobs succeed
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Build and push Docker image
+  #       run: echo "Docker build would happen here..."
