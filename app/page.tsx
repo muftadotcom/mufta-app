@@ -196,11 +196,11 @@ const Chatbot = ({ primaryColor }: { primaryColor: string }) => { const [isOpen,
 export default function App() {
   const [page, setPage] = useState<PageState>({ name: 'home', params: {} });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
+  const [modalContent, setModalContent] = useState<string | null>(null);
   const [currentCity, setCurrentCity] = useState('Gujranwala');
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [installPromptEvent, setInstallPromptEvent] = useState(null);
+  const [installPromptEvent, setInstallPromptEvent] = useState<any | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [adminPage, setAdminPage] = useState('dashboard');
   const [isLoading, setIsLoading] = useState(false);
