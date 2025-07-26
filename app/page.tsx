@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, MapPin, ShoppingCart, User, Menu, X, Gift, Star, Ticket, Zap, Award, Mail, Phone, Globe, LogOut, ChevronDown, Loader2, Plus, Minus, Trash2, CheckCircle, ArrowLeft, Filter, Share2, Heart, Clock, Download, ThumbsUp, Bookmark, Package, ChevronRight, RotateCw, Users, Store, Globe2, UploadCloud, FileText, Camera, LayoutDashboard, Eye, MousePointerClick, Wallet, BarChart2, Tag, Info, ListChecks, Image as ImageIcon, Check, MoreVertical, Edit, Power, ArrowDownCircle, ArrowUpCircle, Settings, Bell, Shield, CheckCircle2, XCircle, UserX, MessageSquare, Send, Sparkles, Building, Phone as PhoneIcon, Palette, Newspaper, Code, QrCode, Home, Megaphone, TrendingUp, Stamp, Bot, StarIcon, LifeBuoy, HelpCircle, Facebook, Twitter, Instagram } from 'lucide-react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { trpc } from '../utils/trpc';
+import { httpBatchLink } from '@trpc/client';
 
 // --- Type Definitions ---
 type TimeLeft = { days: number; hours: number; minutes: number; seconds: number; };
