@@ -4,15 +4,15 @@
 import { router, publicProcedure } from '../trpc';
 import { loyaltyRouter } from './loyalty';
 import { automationsRouter } from './automations';
-// Note: The support router can be added here once created.
+import { dealsRouter } from './deals'; // <-- ADD THIS LINE
 
 export const appRouter = router({
   loyalty: loyaltyRouter,
   automations: automationsRouter,
+  deals: dealsRouter, // <-- ADD THIS LINE
   
   /**
    * A simple healthcheck endpoint to confirm the API is running.
-   * You can test this by navigating to /api/trpc/healthcheck in your browser.
    */
   healthcheck: publicProcedure.query(() => {
     return {
