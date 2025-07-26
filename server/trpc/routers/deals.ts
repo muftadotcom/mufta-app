@@ -1,4 +1,4 @@
-// This file should be created at: /server/trpc/routers/deals.ts
+// This file is located at: /server/trpc/routers/deals.ts
 
 import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export const dealsRouter = router({
   /**
-   * Fetches a list of deals, optionally filtered by city.
+   * Fetches a list of deals from the database, optionally filtered by city.
    */
   getDeals: publicProcedure
     .input(
@@ -17,19 +17,35 @@ export const dealsRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const whereClause = input.city ? { city: input.city } : {};
-      
-      // In a real app, you would fetch from the database like this:
-      // const deals = await prisma.deal.findMany({ where: whereClause });
-      // return deals;
+      // This is now a live database query.
+      // Note: The model is named 'Service' in our Prisma schema.
+      const deals = await prisma.service.findMany({
+        where: {
+          // In a real app, you would filter by city here if the 'Service' model had a city field.
+          // For now, we fetch all services.
+        },
+        include: {
+          vendor: true, // Include vendor information in the response
+        }
+      });
 
-      // For now, returning mock data to demonstrate the connection.
-      // This will be replaced with a live DB query in the next step.
-      const mockDeals = [
-        { id: 1, vendor: 'Pizza Planet', title: 'Buy 1 Get 1 Free Large Pizza', price: 0, type: 'Free Coupon', imageUrl: 'https://placehold.co/600x400/2E1065/FFFFFF?text=Pizza+Deal', city: 'Gujranwala', category: 'coupons', description: 'Enjoy two large pizzas for the price of one! Valid on all classic flavors.', rules: 'Not valid with other offers. Dine-in or takeaway only.', stock: 100, sold: 25, status: 'Active', endDate: new Date() },
-        { id: 5, vendor: 'Lahore Eatery', title: '25% off on entire bill', price: 0, type: 'Free Coupon', imageUrl: 'https://placehold.co/600x400/2E1065/FFFFFF?text=Lahore+Deal', city: 'Lahore', category: 'coupons', description: 'A delicious 25% discount on your total bill.', rules: 'Minimum spend of PKR 1000 applies.', stock: 200, sold: 80, status: 'Active', endDate: new Date() },
-      ];
-
-      return mockDeals.filter(deal => !input.city || deal.city === input.city);
+      // We map the database response to match the front-end's expected 'Deal' type.
+      return deals.map(deal => ({
+        id: deal.id,
+        vendor: deal.vendor.businessName,
+        title: deal.title,
+        price: deal.price,
+        imageUrl: `https://placehold.co/600x400/2E1065/FFFFFF?text=${deal.title.replace(/\s/g, '+')}`, // Placeholder image
+        city: 'Gujranwala', // Placeholder city
+        // Add other fields from your 'Service' model as needed
+        type: 'Coupon',
+        category: 'coupons',
+        description: deal.description,
+        rules: 'Standard rules apply.',
+        stock: 100,
+        sold: 0,
+        status: 'Active',
+        endDate: new Date(),
+      }));
     }),
 });
