@@ -102,3 +102,16 @@ model Feedback {
   comment   String?
   createdAt DateTime @default(now())
 }
+// Add this model to the end of your prisma/schema.prisma file
+
+model FooterSettings {
+  id          String @id @default(cuid())
+  aboutUs     String @db.Text
+  contactEmail String
+  contactPhone String
+  address     String
+  facebookUrl String?
+  twitterUrl  String?
+  instagramUrl String?
+  updatedAt   DateTime @updatedAt
+}
