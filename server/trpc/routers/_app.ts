@@ -6,7 +6,8 @@ import { automationsRouter } from './automations';
 import { dealsRouter } from './deals';
 import { marketingRouter } from './marketing';
 import { footerRouter } from './footer';
-import { landingPagesRouter } from './landingPages'; // <-- ADD THIS LINE
+import { landingPagesRouter } from './landingPages';
+import { analyticsRouter } from './analytics'; // <-- ADD THIS LINE
 
 export const appRouter = router({
   loyalty: loyaltyRouter,
@@ -14,7 +15,8 @@ export const appRouter = router({
   deals: dealsRouter,
   marketing: marketingRouter,
   footer: footerRouter,
-  landingPages: landingPagesRouter, // <-- ADD THIS LINE
+  landingPages: landingPagesRouter,
+  analytics: analyticsRouter, // <-- ADD THIS LINE
   
   healthcheck: publicProcedure.query(() => {
     return {
