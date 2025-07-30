@@ -1,8 +1,8 @@
-// This file should be created at: /server/trpc/routers/landingPages.ts
+// This file is located at: /server/trpc/routers/landingPages.ts
 
 import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
-import { PrismaClient, VendorStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -25,7 +25,8 @@ export const landingPagesRouter = router({
   updatePageStatus: publicProcedure // Should be adminProcedure
     .input(z.object({
       vendorId: z.string(),
-      status: z.enum(['ACTIVE', 'SUSPENDED']),
+      // The status is a simple string, so we use z.enum to validate it.
+      status: z.enum(['ACTIVE', 'SUSPENDED']), 
     }))
     .mutation(async ({ input }) => {
       return prisma.vendor.update({
