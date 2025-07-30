@@ -102,7 +102,6 @@ model Feedback {
   comment   String?
   createdAt DateTime @default(now())
 }
-// Add this model to the end of your prisma/schema.prisma file
 
 model FooterSettings {
   id          String @id @default(cuid())
@@ -114,4 +113,23 @@ model FooterSettings {
   twitterUrl  String?
   instagramUrl String?
   updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String?  @unique
+  name        String?
+  phone       String?  @unique // Add this line
+  password    String?
+  role        String   @default("SHOPPER")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  otp         String?  // Add this line
+  otpExpires  DateTime?// Add this line
+  isVerified  Boolean  @default(false) // Add this line
+
+  vendor      Vendor?
+  orders      Order[]
+  points      PointsLedger[]
 }
