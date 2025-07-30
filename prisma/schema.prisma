@@ -1,135 +1,106 @@
-// This is your Prisma schema file.
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
-}
-
-// ENUMS
-enum UserRole {
-  SHOPPER
-  VENDOR
-  ADMIN
-}
-
-enum VendorStatus {
-  PENDING_APPROVAL
-  ACTIVE
-  SUSPENDED
-}
-
-// MODELS
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  role          UserRole  @default(SHOPPER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  vendor        Vendor?
-  orders        Order[]
-  feedback      Feedback[]
-  loyaltyPoints PointsLedger[]
-}
-
-model Vendor {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id])
-  businessName      String
-  status            VendorStatus @default(PENDING_APPROVAL)
-  
-  services          Service[]
-  feedbackReceived  Feedback[]
-  pointsIssued      PointsLedger[]
-}
-
-model Service {
-  id          String   @id @default(cuid())
-  vendorId    String
-  vendor      Vendor   @relation(fields: [vendorId], references: [id])
-  title       String
-  description String
-  price       Float
-  
-  orderItems  OrderItem[]
-}
-
-model Order {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  total     Float
-  createdAt DateTime    @default(now())
-  
-  items     OrderItem[]
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
-  serviceId String
-  service   Service @relation(fields: [serviceId], references: [id])
-  quantity  Int
-  price     Float
-}
-
-model PointsLedger {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  vendorId  String
-  vendor    Vendor   @relation(fields: [vendorId], references: [id])
-  points    Int
-  reason    String
-  createdAt DateTime @default(now())
-}
-
-model Feedback {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  vendorId  String
-  vendor    Vendor   @relation(fields: [vendorId], references: [id])
-  rating    Int
-  comment   String?
-  createdAt DateTime @default(now())
-}
-
-model FooterSettings {
-  id          String @id @default(cuid())
-  aboutUs     String @db.Text
-  contactEmail String
-  contactPhone String
-  address     String
-  facebookUrl String?
-  twitterUrl  String?
-  instagramUrl String?
-  updatedAt   DateTime @updatedAt
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id          String   @id @default(cuid())
   email       String?  @unique
   name        String?
-  phone       String?  @unique // Add this line
+  phone       String?  @unique
   password    String?
   role        String   @default("SHOPPER")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  otp         String?  // Add this line
-  otpExpires  DateTime?// Add this line
-  isVerified  Boolean  @default(false) // Add this line
+  otp         String?
+  otpExpires  DateTime?
+  isVerified  Boolean  @default(false)
 
   vendor      Vendor?
   orders      Order[]
   points      PointsLedger[]
+}
+
+model Vendor {
+  id                  String @id @default(cuid())
+  businessName        String
+  businessDescription String? @db.Text
+  heroImageUrl        String?
+  
+  status              String   @default("PENDING_APPROVAL") // PENDING_APPROVAL, ACTIVE, SUSPENDED
+  
+  userId              String @unique
+  user                User   @relation(fields: [userId], references: [id])
+  
+  services            Service[]
+  pointsLedger        PointsLedger[]
+}
+
+model Service {
+  id          String @id @default(cuid())
+  title       String
+  description String @db.Text
+  price       Float
+  
+  vendorId    String
+  vendor      Vendor @relation(fields: [vendorId], references: [id])
+  
+  orders      OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  total     Float
+  status    String      // PENDING, COMPLETED, CANCELLED
+  createdAt DateTime    @default(now())
+  
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  quantity  Int
+  price     Float
+  
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+}
+
+model PointsLedger {
+  id        String   @id @default(cuid())
+  points    Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  vendorId  String
+  vendor    Vendor   @relation(fields: [vendorId], references: [id])
+}
+
+model FooterSettings {
+  id           String    @id @default(cuid())
+  aboutUs      String    @db.Text
+  contactEmail String
+  contactPhone String
+  address      String
+  facebookUrl  String?
+  twitterUrl   String?
+  instagramUrl String?
+  updatedAt    DateTime  @updatedAt
 }
