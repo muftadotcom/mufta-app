@@ -10,7 +10,7 @@ type TimeLeft = { days: number; hours: number; minutes: number; seconds: number;
 type PageParams = { dealId?: number; vendorSlug?: string; [key: string]: any; };
 type PageState = { name: string; params: PageParams; };
 type Category = { id: number; name: string; };
-type DynamicCategory = Omit<Category, 'id'> & { id: string; icon: React.ReactElement; };
+type DynamicCategory = { id: string; name: string; icon: React.ReactElement; };
 type Deal = { id: number; vendor: string; title: string; price: number; type: string; imageUrl: string; city: string; category: string; description: string; rules: string; stock: number; sold: number; status: string; endDate: Date; };
 type CartItem = Deal & { quantity: number };
 type Order = { id: string; date: string; status: string; items: CartItem[]; total: number };
@@ -45,7 +45,11 @@ const useStore = <T,>(initialState: T): [T, React.Dispatch<React.SetStateAction<
 
 // --- Gemini API Helper ---
 const callGemini = async (prompt: string): Promise<string> => {
-  return "AI response placeholder";
+  // In a real app, this would make a fetch call to the Gemini API
+  console.log("Gemini Prompt:", prompt);
+  // Simulate a delay and a plausible response
+  await new Promise(res => setTimeout(res, 1500));
+  return "• 🍕 **BOGO Pizza:** Get two large pizzas, pay for one!\n• 🏙️ **City Center:** Perfect for a meal in Gujranwala.\n• 🏃 **Grab it Fast:** This is a limited-time offer for dine-in or takeaway.";
 };
 
 // --- Helper Components ---
@@ -59,7 +63,7 @@ const InstallPwaPrompt = ({ onInstall, onDismiss }: { onInstall: () => void, onD
 const DealCardSkeleton = () => ( <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden animate-pulse"><div className="w-full h-48 bg-gray-300 dark:bg-gray-700"></div><div className="p-4"><div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3 mb-2"></div><div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-full mb-4"></div><div className="flex justify-between items-center"><div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-1/4"></div><div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div></div></div></div> );
 
 // --- Page Components ---
-const HomePage = ({ setPage, deals, onAddToCart, cart, primaryColor, navigateToDeal, navigateTo, categories, isLoading, currentCity }: { setPage: (page: any) => void, deals: any[], onAddToCart: (deal: any) => void, cart: any[], primaryColor: string, navigateToDeal: (id: number) => void, navigateTo: (page: string) => void, categories: any[], isLoading: boolean, currentCity: string }) => ( <> <section className="relative py-20 md:py-32 bg-gray-800 text-white text-center" style={{backgroundImage: 'linear-gradient(rgba(46, 16, 101, 0.8), rgba(46, 16, 101, 0.8)), url(https://placehold.co/1200x400/FF3366/FFFFFF?text=Mufta+Banner)'}}><h1 className="text-4xl md:text-5xl font-extrabold">Welcome to Muffta in {currentCity}!</h1><p className="mt-4 text-lg text-gray-300">Your one-stop shop for the best deals and rewards.</p></section> <section className="py-16 bg-white dark:bg-gray-800"><div className="max-w-7xl mx-auto px-4"><div className="text-center"><h2 className="text-3xl font-extrabold">What are you looking for?</h2></div><div className="mt-12 grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">{categories.map((cat) => ( <button key={cat.id} onClick={() => setPage(cat.id)} className="group flex flex-col items-center justify-center p-6 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"><div className="p-4 rounded-full" style={{backgroundColor: primaryColor, color: 'white'}}>{React.cloneElement(cat.icon, {})}</div><p className="mt-4 text-lg font-semibold">{cat.name}</p></button>))}</div></div></section> <section className="py-16 bg-gray-50 dark:bg-gray-900"><div className="max-w-7xl mx-auto px-4"><div className="flex justify-between items-center mb-12"><h2 className="text-3xl font-extrabold">Top Deals in {deals[0]?.city || '...'}</h2><button onClick={() => navigateTo('coupons')} className="text-lg font-semibold" style={{color: primaryColor}}>View All &rarr;</button></div><div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">{isLoading ? Array.from({length: 4}).map((_, i) => <DealCardSkeleton key={i} />) : deals.slice(0, 4).map((deal) => <DealCard key={deal.id} deal={deal} onAddToCart={onAddToCart} isInCart={cart.some(item => item.id === deal.id)} primaryColor={primaryColor} onCardClick={navigateToDeal} />)}</div></div></section><section className="py-20" style={{backgroundColor: primaryColor}}><div className="max-w-4xl mx-auto text-center px-4"><h2 className="text-3xl font-extrabold text-white sm:text-4xl">Got a Business? Reach Thousands of Shoppers</h2><p className="mt-4 text-lg text-pink-100">Join Mufta to list your deals, attract new customers, and grow your sales. It's free to get started.</p><button onClick={() => navigateTo('vendor_register')} className="mt-8 inline-block bg-white text-pink-600 font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-100">Become a Vendor</button></div></section> </> );
+const HomePage = ({ setPage, deals, onAddToCart, cart, primaryColor, navigateToDeal, navigateTo, categories, isLoading, currentCity }: { setPage: (page: string) => void, deals: any[], onAddToCart: (deal: any) => void, cart: any[], primaryColor: string, navigateToDeal: (id: number) => void, navigateTo: (page: string) => void, categories: any[], isLoading: boolean, currentCity: string }) => ( <> <section className="relative py-20 md:py-32 bg-gray-800 text-white text-center" style={{backgroundImage: 'linear-gradient(rgba(46, 16, 101, 0.8), rgba(46, 16, 101, 0.8)), url(https://placehold.co/1200x400/FF3366/FFFFFF?text=Mufta+Banner)'}}><h1 className="text-4xl md:text-5xl font-extrabold">Welcome to Muffta in {currentCity}!</h1><p className="mt-4 text-lg text-gray-300">Your one-stop shop for the best deals and rewards.</p></section> <section className="py-16 bg-white dark:bg-gray-800"><div className="max-w-7xl mx-auto px-4"><div className="text-center"><h2 className="text-3xl font-extrabold">What are you looking for?</h2></div><div className="mt-12 grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">{categories.map((cat) => ( <button key={cat.id} onClick={() => navigateTo(cat.id)} className="group flex flex-col items-center justify-center p-6 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"><div className="p-4 rounded-full" style={{backgroundColor: primaryColor, color: 'white'}}>{React.cloneElement(cat.icon, {})}</div><p className="mt-4 text-lg font-semibold">{cat.name}</p></button>))}</div></div></section> <section className="py-16 bg-gray-50 dark:bg-gray-900"><div className="max-w-7xl mx-auto px-4"><div className="flex justify-between items-center mb-12"><h2 className="text-3xl font-extrabold">Top Deals in {deals[0]?.city || '...'}</h2><button onClick={() => navigateTo('coupons')} className="text-lg font-semibold" style={{color: primaryColor}}>View All &rarr;</button></div><div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">{isLoading ? Array.from({length: 4}).map((_, i) => <DealCardSkeleton key={i} />) : deals.slice(0, 4).map((deal) => <DealCard key={deal.id} deal={deal} onAddToCart={onAddToCart} isInCart={cart.some(item => item.id === deal.id)} primaryColor={primaryColor} onCardClick={navigateToDeal} />)}</div></div></section><section className="py-20" style={{backgroundColor: primaryColor}}><div className="max-w-4xl mx-auto text-center px-4"><h2 className="text-3xl font-extrabold text-white sm:text-4xl">Got a Business? Reach Thousands of Shoppers</h2><p className="mt-4 text-lg text-pink-100">Join Mufta to list your deals, attract new customers, and grow your sales. It's free to get started.</p><button onClick={() => navigateTo('vendor_register')} className="mt-8 inline-block bg-white text-pink-600 font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-100">Become a Vendor</button></div></section> </> );
 const CouponsPage = ({ deals, onAddToCart, cart, primaryColor, city, navigateToDeal }: { deals: any[], onAddToCart: (deal: any) => void, cart: any[], primaryColor: string, city: string, navigateToDeal: (id: number) => void }) => { const [searchTerm, setSearchTerm] = useState(''); const filteredDeals = deals.filter(deal => deal.title.toLowerCase().includes(searchTerm.toLowerCase())); return <div className="max-w-7xl mx-auto px-4 py-12"><div className="text-center"><h1 className="text-4xl font-extrabold">Free Coupons in <span style={{color: primaryColor}}>{city}</span></h1></div><div className="my-8 sticky top-20 z-10 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm py-4 rounded-lg"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search for coupons..." className="w-full pl-12 pr-4 py-3 border dark:border-gray-600 bg-transparent rounded-lg focus:ring-2 focus:ring-pink-500" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div></div>{filteredDeals.length > 0 ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{filteredDeals.map((deal) => <DealCard key={deal.id} deal={deal} onAddToCart={onAddToCart} isInCart={cart.some(item => item.id === deal.id)} primaryColor={primaryColor} onCardClick={navigateToDeal} />)}</div> : <div className="text-center py-16"><h3 className="text-2xl font-semibold">No Coupons Found</h3></div>}</div>; };
 const DealDetailPage = ({ deal, onAddToCart, isInCart, primaryColor, toggleWishlist, isWishlisted, currentUser, openAuthModal }: { deal: any, onAddToCart: (deal: any) => void, isInCart: boolean, primaryColor: string, toggleWishlist: (id: number) => void, isWishlisted: boolean, currentUser: any, openAuthModal: () => void }) => { const [summary, setSummary] = useState(''); const [isSummaryLoading, setIsSummaryLoading] = useState(false); const handleGenerateSummary = async () => { setIsSummaryLoading(true); const prompt = `Summarize the following deal in 3 short bullet points for a shopper. Use emojis. Deal Title: "${deal.title}", Description: "${deal.description}", Rules: "${deal.rules}".`; const result = await callGemini(prompt); setSummary(result); setIsSummaryLoading(false); }; if (!deal) return <div className="text-center py-20">Deal not found.</div>; const handleWishlistClick = () => { if(currentUser) { toggleWishlist(deal.id); } else { openAuthModal(); } }; return <div className="bg-white dark:bg-gray-800"><div className="max-w-7xl mx-auto px-4 py-12"><div className="grid md:grid-cols-2 gap-12 items-start"><div><img src={deal.imageUrl} alt={deal.title} className="w-full rounded-2xl shadow-xl aspect-video object-cover"/></div><div className="space-y-6"><span className="inline-block bg-pink-100 text-pink-800 text-sm font-semibold px-3 py-1 rounded-full">{deal.type}</span><h1 className="text-4xl font-extrabold">{deal.title}</h1><p className="text-lg text-gray-500 dark:text-gray-400">Offered by <span className="font-semibold" style={{color: primaryColor}}>{deal.vendor}</span></p><div className="mt-4 p-4 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/20"><button onClick={handleGenerateSummary} disabled={isSummaryLoading} className="flex items-center gap-2 font-semibold text-pink-600 disabled:opacity-50">{isSummaryLoading ? <Loader2 className="animate-spin w-5 h-5"/> : <Sparkles className="w-5 h-5"/>}{isSummaryLoading ? 'Generating...' : '✨ Quick Summary'}</button>{summary && <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{summary}</div>}</div><div className="mt-6"><h3 className="text-xl font-bold mb-2">Description</h3><p className="text-gray-600 dark:text-gray-300">{deal.description}</p></div><div className="mt-6"><h3 className="text-xl font-bold mb-2">Rules & Conditions</h3><p className="text-sm text-gray-500 dark:text-gray-400">{deal.rules}</p></div><div className="mt-8 flex flex-col sm:flex-row gap-4"><button onClick={() => !isInCart && onAddToCart(deal)} disabled={isInCart} className={`w-full flex items-center justify-center gap-2 py-4 px-6 text-lg font-bold text-white rounded-lg transition-colors ${isInCart ? 'bg-green-500 cursor-not-allowed' : 'hover:bg-pink-700'}`} style={!isInCart ? {backgroundColor: primaryColor} : {}}>{isInCart ? <><CheckCircle/> Added</> : `Grab for ${deal.price === 0 ? 'Free' : `PKR ${deal.price}`}`}</button><button onClick={handleWishlistClick} className={`w-full sm:w-auto flex items-center justify-center gap-2 py-4 px-6 text-lg font-bold rounded-lg border-2 ${isWishlisted ? 'border-pink-500 bg-pink-50 text-pink-600 dark:bg-pink-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}><Heart className={`w-6 h-6 transition-all ${isWishlisted ? 'fill-current' : ''}`} /></button></div></div></div></div></div>; };
 const FavoritesPage = ({ wishlist, onAddToCart, cart, primaryColor, navigateToDeal, removeWishlist }: { wishlist: any[], onAddToCart: (deal: any) => void, cart: any[], primaryColor: string, navigateToDeal: (id: number) => void, removeWishlist: (id: number) => void }) => ( <div className="max-w-7xl mx-auto px-4 py-12"><div className="text-center mb-12"><h1 className="text-4xl font-extrabold">My Favorites</h1><p className="mt-4 max-w-2xl mx-auto text-lg text-gray-500 dark:text-gray-400">Deals you've saved for later.</p></div>{wishlist.length > 0 ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{wishlist.map((deal) => ( <div key={deal.id} className="relative group"><DealCard deal={deal} onAddToCart={onAddToCart} isInCart={cart.some(item => item.id === deal.id)} primaryColor={primaryColor} onCardClick={navigateToDeal} /><button onClick={() => removeWishlist(deal.id)} className="absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-5 h-5"/></button></div>))}</div> : <div className="text-center py-16 border-2 border-dashed dark:border-gray-700 rounded-lg"><Heart className="mx-auto h-12 w-12 text-gray-400" /><h3 className="mt-2 text-xl font-semibold">Nothing saved yet!</h3><p className="mt-1 text-gray-500 dark:text-gray-400">Click the heart icon on a deal to save it here.</p></div>}</div> );
@@ -166,180 +170,279 @@ const VendorRegistrationPage = ({ primaryColor, secondaryColor, navigateTo }: { 
 
     return <div className="max-w-4xl mx-auto px-4 py-12"><div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl">{step > 1 && <button onClick={() => setStep(step - 1)} className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 mb-6 hover:text-pink-600"><ArrowLeft className="w-4 h-4" /> Back</button>}{renderStep()}</div></div>;
 };
-const VendorDashboardPage = ({ vendor, vendorDeals, vendorOrders, primaryColor, secondaryColor, navigateTo }: { vendor: any, vendorDeals: any[], vendorOrders: any[], primaryColor: string, secondaryColor: string, navigateTo: (page: string) => void }) => { const [activeTab, setActiveTab] = useState('overview'); const tabs = [{id: 'overview', name: 'Overview', icon: <LayoutDashboard/>}, {id: 'services', name: 'My Services', icon: <Tag/>}, {id: 'orders', name: 'Orders', icon: <ShoppingCart/>} ]; const Overview = () => { const kpiData = [ { title: 'Total Views', value: '12,450', change: '+12.5%', icon: <Eye className="w-8 h-8"/>, color: 'text-blue-500' }, { title: 'Total Clicks', value: '3,820', change: '+8.2%', icon: <MousePointerClick className="w-8 h-8"/>, color: 'text-green-500' }, { title: 'GMV (Last 30d)', value: 'PKR 85,600', change: '+21.0%', icon: <BarChart2 className="w-8 h-8"/>, color: 'text-yellow-500' }, { title: 'Wallet Balance', value: 'PKR 5,000', change: '', icon: <Wallet className="w-8 h-8"/>, color: 'text-pink-500' }, ]; return <> <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">{kpiData.map(kpi => ( <div key={kpi.title} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex items-start justify-between"><div><p className="text-sm font-medium text-gray-500 dark:text-gray-400">{kpi.title}</p><p className="text-3xl font-bold mt-2">{kpi.value}</p>{kpi.change && <p className="text-sm text-green-500 mt-1">{kpi.change}</p>}</div><div className={`p-3 rounded-lg bg-gray-100 dark:bg-gray-700 ${kpi.color}`}>{kpi.icon}</div></div>))}</div><div className="mt-12"><h2 className="text-2xl font-bold mb-4">Quick Actions</h2><div className="grid grid-cols-1 md:grid-cols-3 gap-6"><button onClick={() => navigateTo('create_deal')} className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"><Plus className="w-10 h-10 mb-2" style={{color: primaryColor}} /><p className="font-semibold">Create New Deal</p></button><button className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"><UploadCloud className="w-10 h-10 mb-2" style={{color: primaryColor}} /><p className="font-semibold">Upload Media</p></button><button className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"><BarChart2 className="w-10 h-10 mb-2" style={{color: primaryColor}} /><p className="font-semibold">View Analytics</p></button></div></div> </>; }; const Services = () => { const getStatusColor = (status: string) => status === 'Active' ? 'bg-green-100 text-green-800' : status === 'Paused' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'; return <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-x-auto"><table className="w-full text-left"><thead><tr className="border-b dark:border-gray-700"><th className="p-4">Service</th><th className="p-4">Status</th><th className="p-4">Stock/Sold</th><th className="p-4">Price</th><th className="p-4"></th></tr></thead><tbody>{vendorDeals.map(deal => (<tr key={deal.id} className="border-b dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700/50"> <td className="p-4 font-medium">{deal.title}</td> <td className="p-4"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(deal.status)}`}>{deal.status}</span></td> <td className="p-4">{deal.stock - deal.sold} / {deal.stock}</td> <td className="p-4">PKR {deal.price}</td> <td className="p-4"><button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"><MoreVertical className="w-5 h-5"/></button></td> </tr>))}</tbody></table></div>; }; const Orders = () => ( <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-x-auto"><table className="w-full text-left"><thead><tr className="border-b dark:border-gray-700"><th className="p-4">Order ID</th><th className="p-4">Customer</th><th className="p-4">Service</th><th className="p-4">Date</th><th className="p-4">Status</th></tr></thead><tbody>{vendorOrders.map(order => (<tr key={order.id} className="border-b dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700/50"> <td className="p-4 font-mono text-pink-600">#{order.id}</td> <td className="p-4 font-medium">{order.customer}</td> <td className="p-4">{order.item.title}</td> <td className="p-4">{order.date}</td> <td className="p-4"><span className="bg-blue-100 text-blue-800 px-2 py-1 text-xs font-semibold rounded-full">Redeemed</span></td> </tr>))}</tbody></table></div> ); return <div className="bg-gray-100 dark:bg-gray-900 min-h-screen"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div className="mb-8"><h1 className="text-3xl font-bold text-gray-900 dark:text-white">Vendor Dashboard</h1><p className="text-lg text-gray-500 dark:text-gray-400">Manage your business on Mufta.</p></div><div className="border-b border-gray-200 dark:border-gray-700 mb-8"><nav className="-mb-px flex space-x-8" aria-label="Tabs">{tabs.map(tab => ( <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm items-center gap-2 ${activeTab === tab.id ? 'border-pink-500 text-pink-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'}`}>{tab.icon} {tab.name}</button>))} </nav></div><div> {activeTab === 'overview' && <Overview />} {activeTab === 'services' && <Services />} {activeTab === 'orders' && <Orders />}</div></div></div> };
-const CreateDealPage = ({ primaryColor, secondaryColor, navigateTo, categories }: { primaryColor: string, secondaryColor: string, navigateTo: (page: string) => void, categories: any[] }) => { const [step, setStep] = useState(1); const [dealData, setDealData] = useState({ type: '', title: '', description: '', rules: '', stock: 100, price: 0, city: 'Gujranwala', image: null }); const [isGenerating, setIsGenerating] = useState(false); const steps = [ { id: 1, name: 'Service Type', icon: <Tag/> }, { id: 2, name: 'Details', icon: <Info/> }, { id: 3, name: 'Logistics', icon: <ListChecks/> }, { id: 4, name: 'Images', icon: <ImageIcon/> }, { id: 5, name: 'Review', icon: <Check/> } ]; const nextStep = () => setStep(s => Math.min(s + 1, steps.length)); const prevStep = () => setStep(s => Math.max(s - 1, 1)); const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => { const { name, value } = e.target; const parsedValue = name === 'stock' || name === 'price' ? parseInt(value, 10) || 0 : value; setDealData(d => ({...d, [name]: parsedValue })); }; const handleGenerateDescription = async () => { if (!dealData.title) { alert("Please enter a title first."); return; } setIsGenerating(true); const prompt = `You are a marketing expert for a local deals website in Pakistan. A vendor is creating a deal with the title "${dealData.title}". Write an exciting, short description (2-3 sentences) and a fair, clear set of rules for this deal. The tone should be friendly and encourage customers to buy. Separate the description and rules with a line containing only '---'.`; const result = await callGemini(prompt); const [description, rules] = result.split('---'); setDealData(d => ({...d, description: description.trim(), rules: rules.trim() })); setIsGenerating(false); }; return <div className="bg-gray-100 dark:bg-gray-900 min-h-screen"><div className="max-w-5xl mx-auto px-4 py-12"><h1 className="text-3xl font-bold text-center mb-2">Create a New Deal</h1><p className="text-center text-gray-500 dark:text-gray-400 mb-8">Follow the steps to get your new deal listed on Mufta.</p><div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8"><div className="mb-12"><ol className="flex items-center w-full">{steps.map((s, index) => ( <li key={s.id} className={`flex w-full items-center ${index + 1 < steps.length ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block" : ''} ${step > s.id ? 'after:border-pink-600' : 'after:border-gray-200 dark:after:border-gray-700'}`}><span className={`flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12 shrink-0 ${step >= s.id ? 'bg-pink-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>{s.icon}</span></li>))}</ol></div><div> {step === 1 && <div><h3 className="text-xl font-semibold mb-4">Step 1: What kind of service are you offering?</h3><div className="grid grid-cols-2 md:grid-cols-3 gap-4">{categories.map(cat => ( <button key={cat.id} onClick={() => {handleInput({target: {name: 'type', value: cat.name}} as any); nextStep();}} className="flex flex-col items-center p-6 border-2 dark:border-gray-700 rounded-lg hover:border-pink-500 data-[selected=true]:border-pink-500 data-[selected=true]:bg-pink-50 dark:hover:border-pink-500 dark:data-[selected=true]:bg-pink-900/20" data-selected={dealData.type === cat.name}>{React.cloneElement(cat.icon, {className: "w-8 h-8"})}<span className="mt-2 font-medium">{cat.name}</span></button>))}</div></div>} {step === 2 && <div><h3 className="text-xl font-semibold mb-4">Step 2: Describe your deal</h3><div className="space-y-4"><input type="text" name="title" value={dealData.title} onChange={handleInput} placeholder="e.g., Buy 1 Get 1 Free Pizza" className="w-full p-3 border dark:border-gray-600 bg-transparent rounded-lg" /><button onClick={handleGenerateDescription} disabled={isGenerating || !dealData.title} className="flex items-center gap-2 text-sm font-semibold text-white py-2 px-4 rounded-lg disabled:opacity-50" style={{backgroundColor: secondaryColor}}>{isGenerating ? <Loader2 className="animate-spin w-5 h-5"/> : <Sparkles className="w-5 h-5"/>}{isGenerating ? 'Generating...' : '✨ Generate with AI'}</button><textarea name="description" value={dealData.description} onChange={handleInput} placeholder="Detailed description of your offer..." rows={4} className="w-full p-3 border dark:border-gray-600 bg-transparent rounded-lg"></textarea><textarea name="rules" value={dealData.rules} onChange={handleInput} placeholder="Rules and conditions..." rows={3} className="w-full p-3 border dark:border-gray-600 bg-transparent rounded-lg"></textarea></div></div>} {step === 3 && <div><h3 className="text-xl font-semibold mb-4">Step 3: Set the logistics</h3><div className="grid md:grid-cols-2 gap-6"><div><label className="block font-medium mb-1">Stock / Quantity</label><input type="number" name="stock" value={dealData.stock} onChange={handleInput} className="w-full p-3 border dark:border-gray-600 bg-transparent rounded-lg" /></div><div><label className="block font-medium mb-1">Price (PKR)</label><input type="number" name="price" value={dealData.price} onChange={handleInput} className="w-full p-3 border dark:border-gray-600 bg-transparent rounded-lg" /></div><div className="md:col-span-2"><label className="block font-medium mb-1">City</label><select name="city" value={dealData.city} onChange={handleInput} className="w-full p-3 border dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg">{availableCities.map(c => <option key={c}>{c}</option>)}</select></div></div></div>} {step === 4 && <div><h3 className="text-xl font-semibold mb-4">Step 4: Upload an attractive image</h3><div className="mt-1 flex justify-center px-6 pt-10 pb-10 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md"><div className="space-y-1 text-center"><UploadCloud className="mx-auto h-12 w-12 text-gray-400"/><div className="flex text-sm text-gray-600 dark:text-gray-400"><label htmlFor="file-upload" className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-pink-600 hover:text-pink-500"><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" className="sr-only" /></label><p className="pl-1">or drag and drop</p></div><p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG up to 5MB</p></div></div></div>} {step === 5 && <div><h3 className="text-xl font-semibold mb-4">Step 5: Review and Submit</h3><div className="border dark:border-gray-700 rounded-lg p-6 space-y-3"><p><strong>Type:</strong> {dealData.type}</p><p><strong>Title:</strong> {dealData.title}</p><p><strong>Description:</strong> {dealData.description}</p><p><strong>Rules:</strong> {dealData.rules}</p><p><strong>Stock:</strong> {dealData.stock}</p><p><strong>Price:</strong> PKR {dealData.price}</p><p><strong>City:</strong> {dealData.city}</p></div></div>}</div><div className="mt-8 flex justify-between"><button onClick={prevStep} disabled={step === 1} className="py-2 px-6 bg-gray-200 dark:bg-gray-700 rounded-lg font-semibold disabled:opacity-50">Back</button>{step < steps.length ? ( <button onClick={nextStep} className="py-2 px-6 text-white rounded-lg font-semibold" style={{backgroundColor: primaryColor}}>Next</button>) : ( <button onClick={() => navigateTo('vendor_dashboard')} className="py-2 px-6 bg-green-500 text-white rounded-lg font-semibold">Submit Deal</button>)}</div></div></div></div>; };
-const LoyaltyPage = ({ points, ledger, primaryColor, secondaryColor, rewards, stampCards }: { points: number, ledger: any[], primaryColor: string, secondaryColor: string, rewards: any[], stampCards: any[] }) => ( <div className="max-w-7xl mx-auto px-4 py-12"><div className="text-center mb-12"><h1 className="text-4xl font-extrabold tracking-tight">Loyalty Hub</h1><p className="mt-4 max-w-2xl mx-auto text-lg text-gray-500 dark:text-gray-400">Your rewards hub. Earn points, collect stamps, and get exclusive benefits.</p></div><div className="grid lg:grid-cols-3 gap-8 items-start"><div className="lg:col-span-1 space-y-8"><div className="bg-white p-6 rounded-2xl shadow-lg text-center" style={{background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`}}><p className="font-semibold text-white/80">Your Balance</p><p className="text-5xl font-bold text-white mt-2">{points.toLocaleString()}</p><p className="text-white/80">Points</p></div><button className="w-full flex items-center justify-center gap-3 py-4 bg-green-500 text-white rounded-xl shadow-lg font-bold text-lg hover:bg-green-600 transition-transform hover:scale-105"><QrCode/> Scan Receipt QR Code</button><div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg"><h3 className="font-bold text-lg mb-4">Digital Wallet</h3><p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Add your Muffta loyalty card to your phone's wallet for easy access.</p><div className="space-y-3"><button className="w-full flex items-center justify-center gap-2 py-3 bg-black text-white rounded-lg font-semibold"><img src="https://upload.wikimedia.org/wikipedia/commons/3/34/Apple_Wallet_logo.svg" alt="Apple Wallet" className="h-6"/>Add to Apple Wallet</button><button className="w-full flex items-center justify-center gap-2 py-3 mt-3 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Google_Wallet_logo.svg" alt="Google Wallet" className="h-6"/>Add to Google Wallet</button></div></div></div><div className="lg:col-span-2 space-y-12"><div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg"><h3 className="font-bold text-lg mb-4">Your Stamp Cards</h3>{stampCards.length > 0 ? <div className="grid md:grid-cols-2 gap-6">{stampCards.map(card => (<div key={card.id} className="border dark:border-gray-700 rounded-lg p-4"><div className="flex justify-between items-start"><div className="flex-grow"><p className="font-semibold">{card.title}</p><p className="text-sm text-gray-500 dark:text-gray-400">{card.vendor}</p></div><span className="text-4xl">{card.icon}</span></div><div className="grid grid-cols-5 gap-2 mt-4">{Array.from({length: card.totalStamps}).map((_, i) => (<div key={i} className={`w-full aspect-square rounded-full flex items-center justify-center ${i < card.currentStamps ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>{i < card.currentStamps && <Check className="text-white"/>}</div>))}</div><p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-2">{card.currentStamps} / {card.totalStamps} stamps</p></div>))}</div> : <p className="text-gray-500 dark:text-gray-400 text-center py-8">You haven't started any stamp cards yet. Make a purchase to begin!</p>}</div><div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg"><h3 className="font-bold text-lg mb-4">Redeem Your Points</h3>{rewards.length > 0 ? <div className="space-y-4">{rewards.map(reward => (<div key={reward.id} className="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg"><img src={reward.imageUrl} alt={reward.title} className="w-20 h-20 rounded-md object-cover"/><div className="flex-grow"><p className="font-semibold">{reward.title}</p><p className="text-sm text-gray-500 dark:text-gray-400">{reward.vendor}</p></div><div className="text-right flex-shrink-0"><p className="font-bold text-lg" style={{color: primaryColor}}>{reward.points.toLocaleString()} pts</p><button className="mt-1 text-sm font-semibold text-white py-1 px-3 rounded-md transition-colors" style={{backgroundColor: secondaryColor}} disabled={points < reward.points}>Redeem</button></div></div>))}</div> : <p className="text-gray-500 dark:text-gray-400 text-center py-8">No rewards available.</p>}</div></div></div></div> );
-const AdminLayout = ({ user, onLogout, primaryColor, children, activePage, setActivePage }: { user: any, onLogout: () => void, primaryColor: string, children: React.ReactNode, activePage: string, setActivePage: (page: string) => void }) => { const navItems = [ { id: 'dashboard', name: 'Dashboard', icon: <LayoutDashboard /> }, { id: 'categories', name: 'Categories', icon: <Bookmark /> }, { id: 'vendors', name: 'Vendors', icon: <Store /> }, { id: 'landing_pages', name: 'Landing Pages', icon: <Newspaper /> }, { id: 'marketing', name: 'Marketing', icon: <Megaphone /> }, { id: 'refunds', name: 'Refunds', icon: <RotateCw /> }, { id: 'banners', name: 'Banners', icon: <ImageIcon /> }, { id: 'analytics', name: 'Analytics', icon: <BarChart2 /> }, { id: 'footer', name: 'Footer', icon: <Settings /> }, ]; return <div className="flex h-screen bg-gray-100"><aside className="w-64 bg-gray-800 text-white flex flex-col"><div className="h-20 flex items-center justify-center text-2xl font-bold" style={{color: primaryColor}}>Mufta <span className="text-white ml-2">Admin</span></div><nav className="flex-1 px-4 py-4 space-y-2">{navItems.map(item => ( <button key={item.id} onClick={() => setActivePage(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activePage === item.id ? 'bg-pink-600' : 'hover:bg-gray-700'}`}>{item.icon}<span>{item.name}</span></button>))} </nav><div className="p-4 border-t border-gray-700"><button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700"><LogOut /><span>Logout</span></button></div></aside><div className="flex-1 flex flex-col"><header className="h-20 bg-white shadow-md flex items-center justify-between px-8"><h2 className="text-xl font-semibold capitalize">{activePage.replace('_', ' ')}</h2><div className="flex items-center gap-4"><button className="p-2 rounded-full hover:bg-gray-100"><Bell /></button><div className="flex items-center gap-2"><User className="w-8 h-8 p-1.5 bg-gray-200 rounded-full"/><div><p className="font-semibold text-sm">{user.name}</p><p className="text-xs text-gray-500">{user.email}</p></div></div></div></header><main className="flex-1 p-8 overflow-y-auto">{children}</main></div></div>; };
-const AdminDashboardPage = () => { const kpiData = [ { title: 'Total Revenue', value: 'PKR 1.2M', change: '+15.2%', icon: <Wallet/>, color: 'text-green-500' }, { title: 'Active Users', value: '25,849', change: '+8.1%', icon: <Users/>, color: 'text-blue-500' }, { title: 'Active Vendors', value: '1,250', change: '+32', icon: <Store/>, color: 'text-yellow-500' }, { title: 'Pending Refunds', value: '12', change: '', icon: <Clock/>, color: 'text-red-500' }, ]; return <div><h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">{kpiData.map(kpi => ( <div key={kpi.title} className="bg-white p-6 rounded-2xl shadow-lg flex items-start justify-between"><div><p className="text-sm font-medium text-gray-500">{kpi.title}</p><p className="text-3xl font-bold text-gray-900 mt-2">{kpi.value}</p>{kpi.change && <p className="text-sm text-green-500 mt-1">{kpi.change}</p>}</div><div className={`p-3 rounded-lg bg-gray-100 ${kpi.color}`}>{React.cloneElement(kpi.icon, {className: "w-8 h-8"})}</div></div>))}</div></div>; };
-const AdminVendorsPage = ({ vendors, setVendors }: { vendors: any[], setVendors: (v: any) => void }) => { const updateVendorStatus = (id: number, status: string) => { setVendors((current: any[]) => current.map(v => v.id === id ? {...v, status} : v)); }; const getStatusColor = (status: string) => { switch (status) { case 'Active': return 'bg-green-100 text-green-800'; case 'Pending Approval': return 'bg-yellow-100 text-yellow-800'; case 'Suspended': return 'bg-red-100 text-red-800'; default: return 'bg-gray-100 text-gray-800'; } }; return <div><h1 className="text-3xl font-bold text-gray-900 mb-8">Vendor Management</h1><div className="bg-white rounded-lg shadow-lg overflow-hidden"><table className="w-full text-left"><thead className="bg-gray-50"><tr className="border-b"><th className="p-4">Vendor</th><th className="p-4">City</th><th className="p-4">Type</th><th className="p-4">Joined</th><th className="p-4">Status</th><th className="p-4">Actions</th></tr></thead><tbody>{vendors.map(vendor => ( <tr key={vendor.id} className="border-b last:border-none hover:bg-gray-50"><td className="p-4 font-medium">{vendor.name}</td><td className="p-4">{vendor.city}</td><td className="p-4">{vendor.type}</td><td className="p-4">{vendor.joined}</td><td className="p-4"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(vendor.status)}`}>{vendor.status}</span></td><td className="p-4">{vendor.status === 'Pending Approval' ? ( <div className="flex gap-2"><button onClick={() => updateVendorStatus(vendor.id, 'Active')} className="p-2 bg-green-100 text-green-600 rounded-full hover:bg-green-200"><CheckCircle2 className="w-5 h-5"/></button><button onClick={() => updateVendorStatus(vendor.id, 'Suspended')} className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200"><XCircle className="w-5 h-5"/></button></div>) : ( <div className="flex gap-2"><button onClick={() => updateVendorStatus(vendor.id, 'Suspended')} className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200"><UserX className="w-5 h-5"/></button></div>)}</td></tr>))}</tbody></table></div></div>; };
-const AdminCategoriesPage = ({ categories, setCategories, primaryColor }: { categories: Category[], setCategories: (updater: (cats: Category[]) => Category[]) => void, primaryColor: string }) => { const [isModalOpen, setIsModalOpen] = useState(false); const [currentCategory, setCurrentCategory] = useState<Category | null>(null); const [categoryName, setCategoryName] = useState(''); const openModal = (category: Category | null = null) => { setCurrentCategory(category); setCategoryName(category ? category.name : ''); setIsModalOpen(true); }; const closeModal = () => { setIsModalOpen(false); setCurrentCategory(null); setCategoryName(''); }; const handleSave = () => { if (currentCategory) { setCategories((cats: Category[]) => cats.map(c => c.id === currentCategory.id ? {...c, name: categoryName} : c)); } else { setCategories((cats: Category[]) => [...cats, {id: cats.length > 0 ? Math.max(...cats.map(c => c.id)) + 1 : 1, name: categoryName}]); } closeModal(); }; const handleDelete = (id: number) => { setCategories((cats: Category[]) => cats.filter(c => c.id !== id)); }; return <div><div className="flex justify-between items-center mb-8"><h1 className="text-3xl font-bold text-gray-900">Category Management</h1><button onClick={() => openModal()} className="flex items-center gap-2 px-4 py-2 text-white rounded-lg font-semibold" style={{backgroundColor: primaryColor}}><Plus className="w-5 h-5"/> Add Category</button></div><div className="bg-white rounded-lg shadow-lg overflow-hidden"><table className="w-full text-left"><thead className="bg-gray-50"><tr className="border-b"><th className="p-4">ID</th><th className="p-4">Name</th><th className="p-4">Actions</th></tr></thead><tbody>{categories.map(cat => ( <tr key={cat.id} className="border-b last:border-none hover:bg-gray-50"><td className="p-4 font-mono text-gray-500">{cat.id}</td><td className="p-4 font-medium">{cat.name}</td><td className="p-4"><div className="flex gap-2"><button onClick={() => openModal(cat)} className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200"><Edit className="w-5 h-5"/></button><button onClick={() => handleDelete(cat.id)} className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200"><Trash2 className="w-5 h-5"/></button></div></td></tr>))}</tbody></table></div><Modal isOpen={isModalOpen} onClose={closeModal}><div className="p-6"><h2 className="text-2xl font-bold mb-4">{currentCategory ? 'Edit' : 'Add'} Category</h2><input type="text" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} placeholder="Category Name" className="w-full p-3 border rounded-lg mb-6" /><div className="flex justify-end gap-4"><button onClick={closeModal} className="px-4 py-2 bg-gray-200 rounded-lg font-semibold">Cancel</button><button onClick={handleSave} className="px-4 py-2 text-white rounded-lg font-semibold" style={{backgroundColor: primaryColor}}>Save</button></div></div></Modal></div>; };
-const AdminRefundsPage = ({ refunds, setRefunds }: { refunds: any[], setRefunds: (r: any) => void }) => { const [summaries, setSummaries] = useState<{ [key: string]: string }>({}); const [loadingSummary, setLoadingSummary] = useState<number | null>(null); const handleSummarize = async (id: number, reason: string) => { setLoadingSummary(id); const prompt = `Summarize this customer's refund reason into a single, concise sentence: "${reason}"`; const summary = await callGemini(prompt); setSummaries(s => ({...s, [id]: summary })); setLoadingSummary(null); }; const updateRefundStatus = (id: number, status: string) => { setRefunds((current: any[]) => current.map(r => r.id === id ? {...r, status} : r)); }; const getStatusColor = (status: string) => { switch (status) { case 'Approved': return 'bg-green-100 text-green-800'; case 'Pending': return 'bg-yellow-100 text-yellow-800'; case 'Rejected': return 'bg-red-100 text-red-800'; default: return 'bg-gray-100 text-gray-800'; } }; return <div><h1 className="text-3xl font-bold text-gray-900 mb-8">Refund Management</h1><div className="bg-white rounded-lg shadow-lg overflow-hidden"><table className="w-full text-left"><thead className="bg-gray-50"><tr className="border-b"><th className="p-4">Order ID</th><th className="p-4">Vendor</th><th className="p-4">Amount</th><th className="p-4">Reason</th><th className="p-4">Date</th><th className="p-4">Status</th><th className="p-4">Actions</th></tr></thead><tbody>{refunds.map(refund => ( <tr key={refund.id} className="border-b last:border-none hover:bg-gray-50"><td className="p-4 font-mono text-pink-600">#{refund.orderId}</td><td className="p-4 font-medium">{refund.vendor}</td><td className="p-4">PKR {refund.amount}</td><td className="p-4 text-sm text-gray-600">{summaries[refund.id] || refund.reason}{refund.reason.length > 50 && !summaries[refund.id] && (<button onClick={() => handleSummarize(refund.id, refund.reason)} disabled={loadingSummary === refund.id} className="ml-2 text-pink-500 disabled:opacity-50">{loadingSummary === refund.id ? <Loader2 className="w-4 h-4 animate-spin"/> : <Sparkles className="w-4 h-4"/>}</button>)}</td><td className="p-4">{refund.date}</td><td className="p-4"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(refund.status)}`}>{refund.status}</span></td><td className="p-4">{refund.status === 'Pending' && ( <div className="flex gap-2"><button onClick={() => updateRefundStatus(refund.id, 'Approved')} className="p-2 bg-green-100 text-green-600 rounded-full hover:bg-green-200"><CheckCircle2 className="w-5 h-5"/></button><button onClick={() => updateRefundStatus(refund.id, 'Rejected')} className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200"><XCircle className="w-5 h-5"/></button></div>)}</td></tr>))}</tbody></table></div></div>; };
-const AdminBannersPage = ({ banners, setBanners, primaryColor }: { banners: any[], setBanners: (b: any) => void, primaryColor: string }) => { const [isModalOpen, setIsModalOpen] = useState(false); const [currentBanner, setCurrentBanner] = useState<any>(null); const [bannerData, setBannerData] = useState({ name: '', position: 'Hero (Home)', city: 'All', status: true, imageUrl: '' }); const openModal = (banner = null) => { setCurrentBanner(banner); if (banner) { setBannerData(banner); } else { setBannerData({ name: '', position: 'Hero (Home)', city: 'All', status: true, imageUrl: '' }); } setIsModalOpen(true); }; const closeModal = () => { setIsModalOpen(false); setCurrentBanner(null); }; const handleSave = () => { if (currentBanner) { setBanners((bs: any[]) => bs.map(b => b.id === currentBanner.id ? bannerData : b)); } else { setBanners((bs: any[]) => [...bs, {...bannerData, id: Math.max(...bs.map(b => b.id)) + 1 }]); } closeModal(); }; const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setBannerData({...bannerData, [e.target.name]: e.target.value}); const toggleStatus = (id: number) => setBanners((bs: any[]) => bs.map(b => b.id === id ? {...b, status: !b.status} : b)); return <div><div className="flex justify-between items-center mb-8"><h1 className="text-3xl font-bold text-gray-900">Banner Management</h1><button onClick={() => openModal()} className="flex items-center gap-2 px-4 py-2 text-white rounded-lg font-semibold" style={{backgroundColor: primaryColor}}><Plus className="w-5 h-5"/> Add Banner</button></div><div className="bg-white rounded-lg shadow-lg overflow-hidden"><table className="w-full text-left"><thead className="bg-gray-50"><tr className="border-b"><th className="p-4">Preview</th><th className="p-4">Name</th><th className="p-4">Position</th><th className="p-4">City</th><th className="p-4">Status</th><th className="p-4">Actions</th></tr></thead><tbody>{banners.map(banner => ( <tr key={banner.id} className="border-b last:border-none hover:bg-gray-50"><td className="p-4"><img src={banner.imageUrl} alt={banner.name} className="h-12 w-24 object-cover rounded-md"/></td><td className="p-4 font-medium">{banner.name}</td><td className="p-4">{banner.position}</td><td className="p-4">{banner.city}</td><td className="p-4"><button onClick={() => toggleStatus(banner.id)} className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${banner.status ? 'bg-green-500' : 'bg-gray-300'}`}><span className={`w-4 h-4 bg-white rounded-full transform transition-transform ${banner.status ? 'translate-x-6' : 'translate-x-0'}`}/></button></td><td className="p-4"><div className="flex gap-2"><button onClick={() => openModal(banner)} className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200"><Edit className="w-5 h-5"/></button><button onClick={() => {}} className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200"><Trash2 className="w-5 h-5"/></button></div></td></tr>))}</tbody></table></div><Modal isOpen={isModalOpen} onClose={closeModal}><div className="p-6"><h2 className="text-2xl font-bold mb-4">{currentBanner ? 'Edit' : 'Add'} Banner</h2><div className="space-y-4"><input type="text" name="name" value={bannerData.name} onChange={handleInput} placeholder="Banner Name" className="w-full p-3 border rounded-lg" /><select name="position" value={bannerData.position} onChange={handleInput} className="w-full p-3 border rounded-lg bg-white"><option>Hero (Home)</option><option>Category Top</option><option>Search Rail</option><option>Side Rail</option></select><select name="city" value={bannerData.city} onChange={handleInput} className="w-full p-3 border rounded-lg bg-white"><option>All</option>{availableCities.map(c => <option key={c}>{c}</option>)}</select><input type="text" name="imageUrl" value={bannerData.imageUrl} onChange={handleInput} placeholder="Image URL" className="w-full p-3 border rounded-lg" /></div><div className="flex justify-end gap-4 mt-6"><button onClick={closeModal} className="px-4 py-2 bg-gray-200 rounded-lg font-semibold">Cancel</button><button onClick={handleSave} className="px-4 py-2 text-white rounded-lg font-semibold" style={{backgroundColor: primaryColor}}>Save</button></div></div></Modal></div>; };
-const AdminLandingPagesPage = () => <div><h1 className="text-3xl font-bold text-gray-900 mb-8">Vendor Landing Pages</h1><div className="bg-white p-6 rounded-lg shadow-lg"><p>This section will allow admins to view and manage the content of vendor landing pages.</p></div></div>;
-const AdminMarketingPage = () => <div><h1 className="text-3xl font-bold text-gray-900 mb-8">Marketing Suite</h1><div className="bg-white p-6 rounded-lg shadow-lg"><p>This section will contain tools for sending newsletters and SMS campaigns to users.</p></div></div>;
-const AdminFooterSettingsPage = () => <div><h1 className="text-3xl font-bold text-gray-900 mb-8">Footer Settings</h1><div className="bg-white p-6 rounded-lg shadow-lg"><p>This section will contain a form to edit the footer content.</p></div></div>;
-const Chatbot = ({ primaryColor }: { primaryColor: string }) => { const [isOpen, setIsOpen] = useState(false); const [messages, setMessages] = useState([ { id: 1, text: "Hi there! How can I help you today?", sender: 'bot' } ]); const [input, setInput] = useState(''); const chatEndRef = useRef<HTMLDivElement>(null); useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]); const handleSend = (e: React.FormEvent) => { e.preventDefault(); if (!input.trim()) return; const newUserMessage = { id: Date.now(), text: input, sender: 'user' }; setMessages(m => [...m, newUserMessage]); setInput(''); setTimeout(() => { const botResponse = { id: Date.now() + 1, text: "Thanks for your message! This is a demo. In a real app, an AI would provide a helpful answer based on your question.", sender: 'bot' }; setMessages(m => [...m, botResponse]); }, 1000); }; return <> <button onClick={() => setIsOpen(!isOpen)} className="fixed bottom-6 right-6 bg-pink-600 text-white p-4 rounded-full shadow-lg hover:bg-pink-700 transition-transform hover:scale-110 z-50">{isOpen ? <X className="w-8 h-8"/> : <MessageSquare className="w-8 h-8"/>}</button>{isOpen && <div className="fixed bottom-24 right-6 w-full max-w-sm h-[60vh] bg-white rounded-2xl shadow-2xl flex flex-col z-50"><div className="p-4 border-b text-center" style={{backgroundColor: primaryColor, color: 'white'}}><h3 className="font-bold text-lg">Mufta AI Assistant</h3></div><div className="flex-1 p-4 overflow-y-auto">{messages.map(msg => ( <div key={msg.id} className={`flex mb-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-pink-600 text-white' : 'bg-gray-200 text-gray-800'}`}>{msg.text}</div></div>))}{<div ref={chatEndRef} />}</div><form onSubmit={handleSend} className="p-4 border-t flex gap-2"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask a question..." className="w-full p-3 border rounded-lg" /><button type="submit" className="p-3 text-white rounded-lg" style={{backgroundColor: primaryColor}}><Send/></button></form></div>}</>; };
-const Footer = () => { return <footer className="bg-gray-800 text-white"><div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8"><div className="grid grid-cols-1 md:grid-cols-4 gap-8"><div className="md:col-span-1"><h2 className="text-2xl font-bold text-pink-500">Mufta</h2><p className="mt-4 text-gray-400 text-sm">Discover amazing deals and save big on your everyday purchases.</p></div><div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:col-span-3"><div><h3 className="text-sm font-semibold uppercase tracking-wider">Company</h3><ul className="mt-4 space-y-2"><li className="text-sm text-gray-400 hover:text-white">About Us</li><li className="text-sm text-gray-400 hover:text-white">Careers</li><li className="text-sm text-gray-400 hover:text-white">Press</li></ul></div><div><h3 className="text-sm font-semibold uppercase tracking-wider">Support</h3><ul className="mt-4 space-y-2"><li className="text-sm text-gray-400 hover:text-white">Contact Us</li><li className="text-sm text-gray-400 hover:text-white">FAQ</li><li className="text-sm text-gray-400 hover:text-white">Terms of Service</li></ul></div><div><h3 className="text-sm font-semibold uppercase tracking-wider">Connect</h3><ul className="mt-4 space-y-2"><li className="text-sm text-gray-400 hover:text-white">Facebook</li><li className="text-sm text-gray-400 hover:text-white">Twitter</li><li className="text-sm text-gray-400 hover:text-white">Instagram</li></ul></div></div></div><div className="mt-8 border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center"><p className="text-sm text-gray-400">&copy; 2025 Mufta. All rights reserved.</p><div className="flex space-x-6 mt-4 md:mt-0"><Facebook className="h-6 w-6 text-gray-400 hover:text-white"/><Twitter className="h-6 w-6 text-gray-400 hover:text-white"/><Instagram className="h-6 w-6 text-gray-400 hover:text-white"/></div></div></div></footer>; };
-
 
 // --- Main App Component ---
-export default function App() {
-  const [page, setPage] = useState<PageState>({ name: 'home', params: {} });
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<string | null>(null);
-  const [currentCity, setCurrentCity] = useState('Gujranwala');
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [installPromptEvent, setInstallPromptEvent] = useState<any | null>(null);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-  const [adminPage, setAdminPage] = useState('dashboard');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [cart, setCart] = useStore<CartItem[]>([]);
-  const [wishlist, setWishlist] = useStore<number[]>([]);
-  const [orders, setOrders] = useStore<Order[]>([]);
-  const [userEntries, setUserEntries] = useStore<{[key: number]: number}>({});
-  const [loyaltyPoints, setLoyaltyPoints] = useStore(1250);
-  const [pointsLedger, setPointsLedger] = useStore([ {id: 1, description: "Welcome Bonus", date: "July 18, 2025", delta: 1000}, {id: 2, description: "Order #ABC123", date: "July 19, 2025", delta: 250}, ]);
-  const [vendors, setVendors] = useStore<Vendor[]>(initialVendors);
-  const [categories, setCategories] = useStore<Category[]>(initialCategories);
-  const [refunds, setRefunds] = useStore<Refund[]>(initialRefunds);
-  const [banners, setBanners] = useStore<Banner[]>(initialBanners);
-  const [cityDeals, setCityDeals] = useState<Deal[]>([]);
-  const primaryColor = '#FF3366';
-  const secondaryColor = '#2E1065';
-  
-  const dynamicCategories: DynamicCategory[] = useMemo(() => {
-    return categories.map(cat => {
-        const iconMap: { [key: string]: React.ReactElement } = { Coupons: <Ticket/>, Gifts: <Gift/>, Spins: <Zap/>, Scratches: <Star/>, Draws: <Award/> };
-        return { ...cat, id: cat.name.toLowerCase(), icon: iconMap[cat.name] || <Tag/> };
-    });
-  }, [categories]);
-
-  useEffect(() => {
-    const fetchDeals = () => {
-        setIsLoading(true);
-        // Simulate fetching data
-        setTimeout(() => {
-            setCityDeals(allDeals.filter(deal => deal.city === currentCity));
-            setIsLoading(false);
-        }, 1000);
-    };
-    fetchDeals();
-  }, [currentCity]);
-
-  useEffect(() => { const handleBeforeInstallPrompt = (e: any) => { e.preventDefault(); setInstallPromptEvent(e); if (!localStorage.getItem('muftaInstallDismissed')) { setShowInstallPrompt(true); } }; window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt); return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt); }, []);
-  const handleInstall = () => { if (!installPromptEvent) return; (installPromptEvent as any).prompt(); setShowInstallPrompt(false); setInstallPromptEvent(null); };
-  const handleDismissInstall = () => { setShowInstallPrompt(false); localStorage.setItem('muftaInstallDismissed', 'true'); setTimeout(() => localStorage.removeItem('muftaInstallDismissed'), 86400000); };
-
-  const addToCart = (deal: any) => { setCart(current => { const existing = current.find(i => i.id === deal.id); if (existing) return current; return [...current, { ...deal, quantity: 1 }]; }); };
-  const updateCartQuantity = (dealId: number, quantity: number) => { if (quantity === 0) { removeFromCart(dealId); return; } setCart((current: any[]) => current.map(i => i.id === dealId ? { ...i, quantity } : i)); };
-  const removeFromCart = (dealId: number) => { setCart((current: any[]) => current.filter(i => i.id !== dealId)); };
-  const cartItemCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
-  
-  const toggleWishlist = (dealId: number) => { setWishlist(current => { const isWishlisted = current.some(id => id === dealId); if (isWishlisted) { return current.filter(id => id !== dealId); } return [...current, dealId]; }); };
-  const removeWishlist = (dealId: number) => { setWishlist((current: any[]) => current.filter(id => id !== dealId)); };
-  
-  const handleCheckout = () => { if (!currentUser) { setModalContent('auth'); return; } if (cart.length === 0) return; const orderTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0); const orderId = Math.random().toString(36).substr(2, 9).toUpperCase(); const newOrder = { id: orderId, date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), status: 'Processing', items: cart, total: orderTotal }; setOrders((currentOrders: any[]) => [newOrder, ...currentOrders]); const pointsEarned = Math.floor(orderTotal / 10); if(pointsEarned > 0) { setLoyaltyPoints((p: number) => p + pointsEarned); setPointsLedger((l: any[]) => [{id: Math.random(), description: `Order #${orderId}`, date: newOrder.date, delta: pointsEarned}, ...l]); } setCart([]); setIsCartOpen(false); navigateTo('orders'); };
-  
-  const handleEnterDraw = (drawId: number) => { if (!currentUser) { setModalContent('auth'); return; } setUserEntries((current: any) => ({...current, [drawId]: (current[drawId] || 0) + 1 })); };
-
-  const handleSelectCity = (city: string) => { setCurrentCity(city); setModalContent(null); };
-  const handleLoginSuccess = (user: any) => { setCurrentUser(user); setModalContent(null); if (user.type === 'vendor') { navigateTo('vendor_dashboard'); } if (user.type === 'admin') { navigateTo('admin_dashboard'); }};
-  const handleLogout = () => { setCurrentUser(null); setWishlist([]); setOrders([]); setUserEntries({}); setLoyaltyPoints(0); setPointsLedger([]); navigateTo('home'); };
-  const navigateTo = (pageName: string, params = {}) => setPage({ name: pageName, params });
-  const navigateToDeal = (dealId: number) => navigateTo('detail', { dealId });
-
-  const couponDeals = useMemo(() => cityDeals.filter(deal => deal.category === 'coupons' && deal.price === 0), [cityDeals]);
-  const favoriteDeals = useMemo(() => allDeals.filter(deal => wishlist.includes(deal.id)), [wishlist]);
-  const drawDeals = useMemo(() => cityDeals.filter(deal => deal.category === 'draws'), [cityDeals]);
-  const vendorDeals = useMemo(() => currentUser?.type === 'vendor' ? allDeals.filter(d => d.vendor === currentUser.name) : [], [currentUser]);
-  const vendorOrders = useMemo(() => { if (currentUser?.type !== 'vendor') return []; const vendorDealIds = vendorDeals.map(d => d.id); return orders.filter((o: any) => o.items.some((item: any) => vendorDealIds.includes(item.id))).map((o: any) => ({...o, customer: 'Shopper User', item: o.items.find((i: any) => vendorDealIds.includes(i.id)) })); }, [currentUser, orders, vendorDeals]);
-
-
-  const renderPage = () => {
-    // Full-screen pages without common header
-    if (page.name.startsWith('vendor_')) {
-        switch(page.name) {
-            case 'vendor_dashboard': return <VendorDashboardPage vendor={currentUser} vendorDeals={vendorDeals} vendorOrders={vendorOrders} primaryColor={primaryColor} secondaryColor={secondaryColor} navigateTo={navigateTo} />;
-            case 'vendor_register': return <VendorRegistrationPage primaryColor={primaryColor} secondaryColor={secondaryColor} navigateTo={navigateTo} />;
-            case 'vendor_create_deal': return <CreateDealPage primaryColor={primaryColor} secondaryColor={secondaryColor} navigateTo={navigateTo} categories={dynamicCategories} />;
-            default: return <div className="text-center p-20">Page not found</div>;
-        }
-    }
+const MuftaApp = () => {
+    // --- State Management ---
+    const [page, setPage] = useState<PageState>({ name: 'home', params: {} });
+    const [currentCity, setCurrentCity] = useState<string | null>(null);
+    const [isCityModalOpen, setIsCityModalOpen] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [showPwaPrompt, setShowPwaPrompt] = useState(false);
     
-    if (page.name.startsWith('admin_')) {
-        return (
-            <AdminLayout user={currentUser} onLogout={handleLogout} primaryColor={primaryColor} activePage={adminPage} setActivePage={setAdminPage}>
-                {adminPage === 'dashboard' && <AdminDashboardPage />}
-                {adminPage === 'vendors' && <AdminVendorsPage vendors={vendors} setVendors={setVendors} />}
-                {adminPage === 'categories' && <AdminCategoriesPage categories={categories} setCategories={setCategories} primaryColor={primaryColor} />}
-                {adminPage === 'refunds' && <AdminRefundsPage refunds={refunds} setRefunds={setRefunds} />}
-                {adminPage === 'banners' && <AdminBannersPage banners={banners} setBanners={setBanners} primaryColor={primaryColor} />}
-                {adminPage === 'landing_pages' && <AdminLandingPagesPage />}
-                {adminPage === 'marketing' && <AdminMarketingPage />}
-                {adminPage === 'footer' && <AdminFooterSettingsPage />}
-            </AdminLayout>
-        );
-    }
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [cart, setCart] = useStore<CartItem[]>([]);
+    const [wishlist, setWishlist] = useStore<number[]>([]);
+    const [orders, setOrders] = useStore<Order[]>([
+        { id: 'X7B2A', date: '2025-07-18', status: 'Delivered', items: [{ id: 2, vendor: 'The Style Hub', title: 'Flat 30% Off on All Jeans', price: 100, type: 'Paid Voucher', imageUrl: 'https://placehold.co/600x400/FF3366/FFFFFF?text=Fashion+Sale', city: 'Gujranwala', category: 'coupons', description: 'Upgrade your wardrobe with our latest collection of denim.', rules: 'Voucher is non-refundable. One voucher per customer.', stock: 50, sold: 10, status: 'Active', endDate: new Date(), quantity: 1 }], total: 100 }
+    ]);
+    const [userEntries, setUserEntries] = useStore<{[key: number]: number}>({ 7: 2 });
 
-    // Shopper pages with common header
+    const [deals, setDeals] = useState<Deal[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // --- Theming ---
+    const primaryColor = '#FF3366'; // Hot Pink
+    const secondaryColor = '#2E1065'; // Deep Indigo
+
+    // --- Dynamic Categories ---
+    const dynamicCategories: DynamicCategory[] = [
+        { id: 'coupons', name: 'Coupons', icon: <Ticket className="w-8 h-8"/> },
+        { id: 'gifts', name: 'Gifts', icon: <Gift className="w-8 h-8"/> },
+        { id: 'spins', name: 'Spins', icon: <RotateCw className="w-8 h-8"/> },
+        { id: 'scratches', name: 'Scratches', icon: <Star className="w-8 h-8"/> },
+        { id: 'draws', name: 'Draws', icon: <Zap className="w-8 h-8"/> },
+    ];
+
+    // --- Effects ---
+    useEffect(() => {
+        const savedCity = localStorage.getItem('mufta-city');
+        if (savedCity) {
+            setCurrentCity(savedCity);
+        } else {
+            setIsCityModalOpen(true);
+        }
+        
+        // PWA install prompt logic
+        setTimeout(() => {
+            if (typeof window !== 'undefined' && !window.matchMedia('(display-mode: standalone)').matches) {
+                setShowPwaPrompt(true);
+            }
+        }, 5000);
+    }, []);
+
+    useEffect(() => {
+        if (currentCity) {
+            setIsLoading(true);
+            // Simulate API call
+            setTimeout(() => {
+                setDeals(allDeals.filter(d => d.city === currentCity));
+                setIsLoading(false);
+            }, 1000);
+        }
+    }, [currentCity]);
+
+
+    // --- Handlers ---
+    const handleSelectCity = (city: string) => {
+        setCurrentCity(city);
+        localStorage.setItem('mufta-city', city);
+        setIsCityModalOpen(false);
+    };
+
+    const handleLoginSuccess = (user: any) => {
+        setCurrentUser(user);
+        setIsAuthModalOpen(false);
+    };
+
+    const handleLogout = () => {
+        setCurrentUser(null);
+        setPage({ name: 'home', params: {} });
+    };
+
+    const navigateTo = (name: string, params: PageParams = {}) => {
+        setPage({ name, params });
+        window.scrollTo(0, 0);
+    };
+    
+    const navigateToDeal = (dealId: number) => navigateTo('deal_detail', { dealId });
+
+    const handleAddToCart = (deal: Deal) => {
+        setCart(prevCart => {
+            const existingItem = prevCart.find(item => item.id === deal.id);
+            if (existingItem) {
+                return prevCart.map(item => item.id === deal.id ? { ...item, quantity: item.quantity + 1 } : item);
+            }
+            return [...prevCart, { ...deal, quantity: 1 }];
+        });
+        setIsCartOpen(true);
+    };
+    
+    const updateCartQuantity = (id: number, quantity: number) => {
+        if (quantity <= 0) {
+            setCart(cart.filter(item => item.id !== id));
+        } else {
+            setCart(cart.map(item => item.id === id ? { ...item, quantity } : item));
+        }
+    };
+
+    const removeFromCart = (id: number) => {
+        setCart(cart.filter(item => item.id !== id));
+    };
+    
+    const handleCheckout = () => {
+        if (!currentUser) {
+            setIsCartOpen(false);
+            setIsAuthModalOpen(true);
+            return;
+        }
+        const newOrder: Order = {
+            id: `MFT-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+            date: new Date().toISOString().split('T')[0],
+            status: 'Processing',
+            items: cart,
+            total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        };
+        setOrders(prev => [newOrder, ...prev]);
+        setCart([]);
+        setIsCartOpen(false);
+        navigateTo('orders');
+    };
+
+    const toggleWishlist = (dealId: number) => {
+        setWishlist(prev => prev.includes(dealId) ? prev.filter(id => id !== dealId) : [...prev, dealId]);
+    };
+    
+    const removeWishlist = (dealId: number) => {
+        setWishlist(prev => prev.filter(id => id !== dealId));
+    };
+
+    const enterDraw = (drawId: number) => {
+        if (!currentUser) {
+            setIsAuthModalOpen(true);
+            return;
+        }
+        setUserEntries(prev => ({ ...prev, [drawId]: (prev[drawId] || 0) + 1 }));
+        // In a real app, you would also handle payment for the draw entry
+    };
+
+    // --- Render Logic ---
+    const renderPage = () => {
+        switch (page.name) {
+            case 'home':
+                return <HomePage setPage={(catId) => navigateTo(catId)} deals={deals} onAddToCart={handleAddToCart} cart={cart} primaryColor={primaryColor} navigateToDeal={navigateToDeal} navigateTo={navigateTo} categories={dynamicCategories} isLoading={isLoading} currentCity={currentCity || '...'} />;
+            case 'coupons':
+                return <CouponsPage deals={deals.filter(d => d.category === 'coupons')} onAddToCart={handleAddToCart} cart={cart} primaryColor={primaryColor} city={currentCity || ''} navigateToDeal={navigateToDeal} />;
+            case 'deal_detail':
+                const deal = allDeals.find(d => d.id === page.params.dealId); // Search all deals, not just city-specific
+                return <DealDetailPage deal={deal} onAddToCart={handleAddToCart} isInCart={cart.some(c => c.id === deal?.id)} primaryColor={primaryColor} toggleWishlist={toggleWishlist} isWishlisted={wishlist.includes(deal?.id || -1)} currentUser={currentUser} openAuthModal={() => setIsAuthModalOpen(true)} />;
+            case 'favorites':
+                const wishlistedDeals = allDeals.filter(d => wishlist.includes(d.id));
+                return <FavoritesPage wishlist={wishlistedDeals} onAddToCart={handleAddToCart} cart={cart} primaryColor={primaryColor} navigateToDeal={navigateToDeal} removeWishlist={removeWishlist} />;
+            case 'orders':
+                return <OrdersPage orders={orders} primaryColor={primaryColor} />;
+            case 'spins':
+                return <SpinsPage primaryColor={primaryColor} secondaryColor={secondaryColor} />;
+            case 'scratches':
+                return <ScratchesPage primaryColor={primaryColor} />;
+            case 'draws':
+                return <DrawsPage draws={deals.filter(d => d.category === 'draws')} primaryColor={primaryColor} secondaryColor={secondaryColor} userEntries={userEntries} enterDraw={enterDraw} />;
+            case 'vendor_register':
+                return <VendorRegistrationPage primaryColor={primaryColor} secondaryColor={secondaryColor} navigateTo={navigateTo} />;
+            default:
+                return <HomePage setPage={(catId) => navigateTo(catId)} deals={deals} onAddToCart={handleAddToCart} cart={cart} primaryColor={primaryColor} navigateToDeal={navigateToDeal} navigateTo={navigateTo} categories={dynamicCategories} isLoading={isLoading} currentCity={currentCity || '...'} />;
+        }
+    };
+    
+    const totalCartItems = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
+
     return (
-        <>
-            <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
+        <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen font-sans">
+            <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-20">
-                        <div className="flex items-center">
-                            {page.name !== 'home' && <button onClick={() => navigateTo('home')} className="mr-4 p-2 rounded-full hover:bg-gray-100"><ArrowLeft /></button>}
-                            <button onClick={() => navigateTo('home')} className="text-3xl font-bold" style={{ color: primaryColor }}>Mufta</button>
+                        <div className="flex items-center space-x-4">
+                             <button onClick={() => navigateTo('home')} className="flex items-center space-x-2">
+                                <Gift className="w-8 h-8" style={{color: primaryColor}} />
+                                <span className="text-2xl font-bold">Muffta</span>
+                            </button>
+                            <button onClick={() => setIsCityModalOpen(true)} className="hidden md:flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <MapPin className="w-5 h-5 text-gray-500" />
+                                <span className="font-medium">{currentCity || 'Select City'}</span>
+                                <ChevronDown className="w-4 h-4 text-gray-500" />
+                            </button>
                         </div>
-                        <nav className="hidden md:flex items-center space-x-8">
-                            {dynamicCategories.map((cat) => <button key={cat.id} onClick={() => navigateTo(cat.id as string)} className="font-medium hover:text-pink-600">{cat.name}</button>)}
-                        </nav>
-                        <div className="hidden md:flex items-center space-x-4">
-                            <button onClick={() => setModalContent('city')} className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100"><Globe className="w-6 h-6" /><span className="text-sm font-medium hidden lg:block">{currentCity}</span></button>
-                            <button onClick={() => setIsCartOpen(true)} className="relative p-2 rounded-full hover:bg-gray-100"><ShoppingCart className="w-6 h-6" />{cartItemCount > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full text-xs text-white ring-2 ring-white" style={{backgroundColor: primaryColor}}>{cartItemCount}</span>}</button>
-                            {currentUser ? <UserProfile user={currentUser} onLogout={handleLogout} navigateTo={navigateTo}/> : <button onClick={() => setModalContent('auth')} className="flex items-center space-x-2 px-4 py-2 border rounded-md text-white" style={{ backgroundColor: secondaryColor }}><User className="w-5 h-5" /><span>Login</span></button>}
+                        <div className="hidden md:flex items-center space-x-6">
+                            {dynamicCategories.map(cat => (
+                                <button key={cat.id} onClick={() => navigateTo(cat.name.toLowerCase())} className="font-semibold text-gray-600 dark:text-gray-300 hover:text-pink-600">{cat.name}</button>
+                            ))}
                         </div>
-                         <div className="md:hidden flex items-center space-x-2">
-                            <button onClick={() => setIsCartOpen(true)} className="relative p-2"><ShoppingCart className="w-6 h-6" />{cartItemCount > 0 && <span className="absolute top-0 right-0 block h-4 w-4 rounded-full text-xs" style={{backgroundColor: primaryColor}}/>}</button>
-                            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">{isMenuOpen ? <X /> : <Menu />}</button>
+                        <div className="flex items-center space-x-4">
+                             <button onClick={() => setIsCartOpen(true)} className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <ShoppingCart className="w-6 h-6" />
+                                {totalCartItems > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full text-xs font-medium text-white flex items-center justify-center" style={{backgroundColor: secondaryColor}}>{totalCartItems}</span>}
+                            </button>
+                            {currentUser ? (
+                                <UserProfile user={currentUser} onLogout={handleLogout} navigateTo={navigateTo} />
+                            ) : (
+                                <button onClick={() => setIsAuthModalOpen(true)} className="font-semibold text-white px-5 py-2 rounded-lg" style={{backgroundColor: primaryColor}}>Login</button>
+                            )}
+                            <button className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <Menu className="w-6 h-6" />
+                            </button>
                         </div>
                     </div>
                 </div>
             </header>
-            <main className="pb-24">
-                {(() => {
-                    switch (page.name) {
-                        case 'coupons': return <CouponsPage deals={couponDeals} onAddToCart={addToCart} cart={cart} primaryColor={primaryColor} city={currentCity} navigateToDeal={navigateToDeal} />;
-                        case 'detail': const deal = allDeals.find(d => d.id === page.params.dealId); return <DealDetailPage deal={deal} onAddToCart={addToCart} isInCart={cart.some(item => item.id === deal?.id)} primaryColor={primaryColor} toggleWishlist={toggleWishlist} isWishlisted={wishlist.some(id => id === deal?.id)} currentUser={currentUser} openAuthModal={() => setModalContent('auth')} />;
-                        case 'favorites': return <FavoritesPage wishlist={favoriteDeals} onAddToCart={addToCart} cart={cart} primaryColor={primaryColor} navigateToDeal={navigateToDeal} removeWishlist={removeWishlist} />;
-                        case 'orders': return <OrdersPage orders={orders} primaryColor={primaryColor} />;
-                        case 'spins': return <SpinsPage primaryColor={primaryColor} secondaryColor={secondaryColor} />;
-                        case 'scratches': return <ScratchesPage primaryColor={primaryColor} />;
-                        case 'draws': return <DrawsPage draws={drawDeals} primaryColor={primaryColor} secondaryColor={secondaryColor} userEntries={userEntries} enterDraw={handleEnterDraw} />;
-                        case 'loyalty': return <LoyaltyPage points={loyaltyPoints} ledger={pointsLedger} primaryColor={primaryColor} secondaryColor={secondaryColor} rewards={initialRewards} stampCards={initialStampCards} />;
-                        default: return <HomePage setPage={(p) => navigateTo(p)} deals={cityDeals} onAddToCart={addToCart} cart={cart} primaryColor={primaryColor} navigateToDeal={navigateToDeal} navigateTo={navigateTo} categories={dynamicCategories} isLoading={isLoading} currentCity={currentCity} />;
-                    }
-                })()}
+
+            <main>
+                {currentCity ? renderPage() : <div className="flex justify-center items-center h-[calc(100vh-80px)]"><Loader2 className="w-12 h-12 animate-spin" style={{color: primaryColor}}/></div>}
             </main>
-            <Footer />
-            <Chatbot primaryColor={primaryColor}/>
-        </>
+
+            <footer className="bg-gray-800 text-white">
+                 <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <h3 className="text-lg font-semibold">About Mufta</h3>
+                            <ul className="mt-4 space-y-2 text-gray-300">
+                                <li><a href="#" className="hover:text-white">About Us</a></li>
+                                <li><a href="#" className="hover:text-white">Careers</a></li>
+                                <li><a href="#" className="hover:text-white">Press</a></li>
+                                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold">For Vendors</h3>
+                            <ul className="mt-4 space-y-2 text-gray-300">
+                                <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('vendor_register'); }} className="hover:text-white">Register as Vendor</a></li>
+                                <li><a href="#" className="hover:text-white">Vendor Login</a></li>
+                                <li><a href="#" className="hover:text-white">Vendor Support</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold">Help & Support</h3>
+                            <ul className="mt-4 space-y-2 text-gray-300">
+                                <li><a href="#" className="hover:text-white">FAQs</a></li>
+                                <li><a href="#" className="hover:text-white">Refund Policy</a></li>
+                                <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold">Follow Us</h3>
+                            <div className="flex mt-4 space-x-4">
+                                <a href="#" className="text-gray-400 hover:text-white"><Facebook /></a>
+                                <a href="#" className="text-gray-400 hover:text-white"><Twitter /></a>
+                                <a href="#" className="text-gray-400 hover:text-white"><Instagram /></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
+                        <p>&copy; 2025 Muffta. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
+
+            <Modal isOpen={isCityModalOpen} onClose={() => {}}>
+                <CitySelector onSelectCity={handleSelectCity} cities={availableCities} />
+            </Modal>
+            <Modal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)}>
+                <AuthFlow onLoginSuccess={handleLoginSuccess} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+            </Modal>
+            <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cart={cart} updateQuantity={updateCartQuantity} removeFromCart={removeFromCart} primaryColor={primaryColor} handleCheckout={handleCheckout} />
+            {showPwaPrompt && <InstallPwaPrompt onInstall={() => setShowPwaPrompt(false)} onDismiss={() => setShowPwaPrompt(false)} />}
+        </div>
     );
-  };
+};
 
-  return (
-    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
-      <Modal isOpen={!!modalContent} onClose={() => setModalContent(null)}>
-          {modalContent === 'city' && <CitySelector onSelectCity={handleSelectCity} cities={availableCities} />}
-          {modalContent === 'auth' && <AuthFlow onLoginSuccess={handleLoginSuccess} primaryColor={primaryColor} secondaryColor={secondaryColor} />}
-      </Modal>
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cart={cart} updateQuantity={updateCartQuantity} removeFromCart={removeFromCart} primaryColor={primaryColor} handleCheckout={handleCheckout} />
-      
-      {renderPage()}
-
-      {showInstallPrompt && <InstallPwaPrompt onInstall={handleInstall} onDismiss={handleDismissInstall} />}
-    </div>
-  );
-}
+export default MuftaApp;

@@ -8,7 +8,8 @@ import { marketingRouter } from './marketing';
 import { footerRouter } from './footer';
 import { landingPagesRouter } from './landingPages';
 import { analyticsRouter } from './analytics';
-import { authRouter } from './auth'; // <-- ADD THIS LINE
+import { authRouter } from './auth';
+import { bannersRouter } from './banners';
 
 export const appRouter = router({
   loyalty: loyaltyRouter,
@@ -18,7 +19,8 @@ export const appRouter = router({
   footer: footerRouter,
   landingPages: landingPagesRouter,
   analytics: analyticsRouter,
-  auth: authRouter, // <-- ADD THIS LINE
+  auth: authRouter,
+  banners: bannersRouter,
   
   healthcheck: publicProcedure.query(() => {
     return {
