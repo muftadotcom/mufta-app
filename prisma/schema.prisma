@@ -104,3 +104,16 @@ model FooterSettings {
   instagramUrl String?
   updatedAt    DateTime  @updatedAt
 }
+
+// prisma/schema.prisma
+
+model Banner {
+  id        Int      @id @default(autoincrement())
+  name      String
+  position  String
+  city      String
+  status    Boolean  @default(true)
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
