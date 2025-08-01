@@ -1,33 +1,19 @@
-// File: /server/trpc/routers/_app.ts
+// server/trpc/routers/_app.ts
 
-import { router, publicProcedure } from '../trpc';
-import { loyaltyRouter } from './loyalty';
-import { automationsRouter } from './automations';
-import { dealsRouter } from './deals';
-import { marketingRouter } from './marketing';
-import { footerRouter } from './footer';
-import { landingPagesRouter } from './landingPages';
-import { analyticsRouter } from './analytics';
-import { authRouter } from './auth';
+import { createTRPCRouter } from '../trpc';
 import { bannersRouter } from './banners';
+// Import other routers here as you create them
+// import { dealsRouter } from './deals';
 
-export const appRouter = router({
-  loyalty: loyaltyRouter,
-  automations: automationsRouter,
-  deals: dealsRouter,
-  marketing: marketingRouter,
-  footer: footerRouter,
-  landingPages: landingPagesRouter,
-  analytics: analyticsRouter,
-  auth: authRouter,
+/**
+ * This is the primary router for your server.
+ *
+ * All routers added in /api/routers should be manually added here.
+ */
+export const appRouter = createTRPCRouter({
   banners: bannersRouter,
-  
-  healthcheck: publicProcedure.query(() => {
-    return {
-      status: 'ok',
-      message: 'Muffta API is running!',
-    };
-  }),
+  // deals: dealsRouter,
 });
 
+// export type definition of API
 export type AppRouter = typeof appRouter;

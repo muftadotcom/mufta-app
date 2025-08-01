@@ -1,75 +1,66 @@
-// This file should be created at: /server/trpc/routers/banners.ts
+// server/trpc/routers/banners.ts
 
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
-import { PrismaClient } from '@prisma/client';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
-const prisma = new PrismaClient();
+export const bannersRouter = createTRPCRouter({
+  // Procedure to get all banners (publicly accessible)
+  getAll: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.banner.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }),
 
-export const bannersRouter = router({
-  /**
-   * Fetches ONLY the active banners for display on the homepage.
-   */
-  getActiveBanners: publicProcedure
-    .query(async () => {
-      return prisma.banner.findMany({
-        where: { status: true },
-        orderBy: { createdAt: 'desc' },
+  // Procedure to get active banners (publicly accessible)
+  getActiveBanners: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.banner.findMany({
+      where: { status: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }),
+
+  // Procedure to create a new banner (protected)
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, 'Name is required.'),
+        position: z.string().min(1, 'Position is required.'),
+        city: z.string().min(1, 'City is required.'),
+        status: z.boolean().default(true),
+        imageUrl: z.string().url('Must be a valid URL.'),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.banner.create({
+        data: input,
       });
     }),
 
-  /**
-   * Fetches ALL banners for the admin panel.
-   */
-  getAllBanners: publicProcedure // Should be adminProcedure
-    .query(async () => {
-      return prisma.banner.findMany({
-        orderBy: { createdAt: 'desc' },
+  // Procedure to update an existing banner (protected)
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.coerce.number(), // Coerces string to number
+        name: z.string().min(1).optional(),
+        position: z.string().min(1).optional(),
+        city: z.string().min(1).optional(),
+        status: z.boolean().optional(),
+        imageUrl: z.string().url().optional(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      const { id, ...data } = input;
+      return ctx.prisma.banner.update({
+        where: { id },
+        data,
       });
     }),
-  
-  /**
-   * Creates a new banner.
-   */
-  createBanner: publicProcedure // Should be adminProcedure
-    .input(z.object({
-        name: z.string().min(3),
-        position: z.string(),
-        city: z.string(),
-        imageUrl: z.string().url(),
-        status: z.boolean(),
-    }))
-    .mutation(async ({ input }) => {
-        return prisma.banner.create({ data: input });
-    }),
 
-  /**
-   * Updates an existing banner, including its status (toggle).
-   */
-  updateBanner: publicProcedure // Should be adminProcedure
-    .input(z.object({
-        id: z.string(),
-        name: z.string().min(3),
-        position: z.string(),
-        city: z.string(),
-        imageUrl: z.string().url(),
-        status: z.boolean(),
-    }))
-    .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        return prisma.banner.update({
-            where: { id },
-            data,
-        });
-    }),
-
-  /**
-   * Deletes a banner from the database.
-   */
-  deleteBanner: publicProcedure // Should be adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      return prisma.banner.delete({
+  // Procedure to delete a banner (protected)
+  delete: protectedProcedure
+    .input(z.object({ id: z.coerce.number() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.banner.delete({
         where: { id: input.id },
       });
     }),
