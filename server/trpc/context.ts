@@ -1,21 +1,18 @@
-// server/trpc/context.ts
-
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { getSession } from 'next-auth/react';
 import { prisma } from '../db';
+import { headers } from 'next/headers';
 
 /**
  * Creates context for an incoming request.
- * This function now fetches the user session and includes it.
- * @link https://trpc.io/docs/context
+ * This function is now framework-agnostic.
  */
-export const createContext = async (opts: CreateNextContextOptions) => {
-  const { req } = opts;
+export const createContext = async () => {
+  const session = await getSession({
+    req: {
+      headers: Object.fromEntries(headers()),
+    },
+  });
 
-  // Get the session from the request using your auth library
-  const session = await getSession({ req });
-
-  // Return the context object with both prisma and the session
   return {
     prisma,
     session,
